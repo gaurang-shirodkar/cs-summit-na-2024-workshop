@@ -1,0 +1,16 @@
+- rule: Create Secret in AWS Secrets Manager
+  desc: Detect when a secret is created in AWS Secrets Manager
+  condition: ct.name="CreateSecret" and not ct.error exists
+  output: A new secret has been created in AWS Secrets Manager. (requesting user=%ct.user, requesting IP=%ct.srcip, AWS region=%ct.region, secret name=%ct.request.name)
+  priority: WARNING
+  tags:
+    - AWS
+  source: awscloudtrail
+  append: false
+  exceptions:
+  - name: user_whitelisted
+    fields: 
+    - ct.user.arn
+    comps: [=]
+    values: 
+    - "arn:aws:iam::835596177334:user/default-user"

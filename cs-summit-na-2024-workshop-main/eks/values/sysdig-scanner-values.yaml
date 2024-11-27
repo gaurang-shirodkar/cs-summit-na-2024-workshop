@@ -1,0 +1,15 @@
+config:
+  secureBaseURL: ${secure_base_url}
+  secureAPIToken: ${secure_api_token}
+  registryType: ecr
+  registryURL: ${registry_url}
+  logging: debug
+  aws:
+    region: ${aws_region}
+  # scan:
+    # inlineScanImage: 835596177334.dkr.ecr.us-east-1.amazonaws.com/sysdig:job-0.2.53
+# image: 
+  # registry: 835596177334.dkr.ecr.us-east-1.amazonaws.com
+  # repository: sysdig
+scanOnStart:
+  enabled: true

@@ -1,0 +1,98 @@
+global:
+  clusterConfig:
+    name: ${cluster_name}
+  sysdig:
+    region: us4
+    accessKey: ${access_key}
+    secureAPIToken: ${api_token}
+    tags: 
+      linux: amazonlinux2
+      dept: igordevelopment
+      local: saopaulo
+      host_shield: true
+  kspm:
+    deploy: false
+kspmCollector:
+  enabled: false
+agent:
+  extraVolumes:
+    volumes:
+    - name: root-vol
+      hostPath:
+        path: /
+    - name: tmp-vol
+      hostPath:
+        path: /tmp
+    mounts:
+    - mountPath: /host
+      name: root-vol
+      readOnly: true
+    # The host's tmp directory needs to be writeable for kspm-analyzer to create the scripts it runs.
+    - mountPath: /host/tmp
+      name: tmp-vol
+  ebpf:
+    enabled: false
+  # image:
+  #   tag: 12.19.0 ## set agent version 
+  daemonset:
+    labels:
+      environment: dev
+  sysdig:
+    settings:
+      sysdig_api_endpoint: ${secure_url}
+      host_scanner:
+        enabled: true
+      kspm_analyzer:
+        enabled: true
+      feature:
+        mode: secure_light
+      # agent tags in settings are merged with the tags in global.sysdig.tags
+      # under the agent, config should be a list of key value pairs delimited by a colon
+      # tags: 'linux:ubuntu,dept:dev,local:nyc'   
+clusterShield:
+  tolerations:
+  - key: MyTolerationKey
+    operator: Equal
+    value: MyTolerationValue
+    effect: NoSchedule
+  podAnnotations:
+    prometheus.io/scrape: "true"
+  enabled: true
+  cluster_shield:
+    log_level: debug
+    features:
+      admission_control:
+        dry_run: false
+        deny_on_error: true
+        enabled: true ## KSPM evaluation
+        container_vulnerability_management:
+          enabled: true ## VM evaluation
+      audit:
+        enabled: true
+      container_vulnerability_management:
+        enabled: true
+        local_cluster:
+          enabled: true
+          # registry_secrets:
+            # - namespace: sysdig-agent
+              # secrets:
+                # - gar-cred
+      posture:
+        enabled: true
+  image:
+    # tag: 466cae8
+    # repository: us-docker.pkg.dev/sysdig-artifact-registry-dev/gar-docker/agent/cluster-shield
+  replicaCount: 1
+  # imagePullSecrets:
+    # - name: "gar-cred"
+admissionController:
+  enabled: false
+  features:
+    kspmAdmissionController: true
+  webhook: 
+    logLevel: debug
+nodeAnalyzer:
+  enabled: false
+
+
+

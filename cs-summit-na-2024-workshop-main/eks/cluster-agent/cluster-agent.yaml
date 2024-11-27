@@ -1,0 +1,19 @@
+image:
+  tag: 6b3c2fe
+agent_cluster:
+  cluster_config:
+    name: sysdig
+  sysdig_endpoint:
+    api_url: ${secure_base_url}
+    secure_api_token: ${secure_api_token}
+    access_key: ${access_key}
+  features:
+    audit:
+      enabled: true
+    posture:
+      enabled: true
+    container_vulnerability_management:
+      enabled: true
+imagePullSecrets:
+  - name: gar-cred
+

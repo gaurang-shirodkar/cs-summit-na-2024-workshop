@@ -1,0 +1,127 @@
+cluster_config:
+  name: ${cluster_name}
+  cluster_type: other
+  root_namespace: kube-system
+  tags: {}
+sysdig_endpoint:
+  region: ${region}
+  access_key: ${access_key}
+  # access_key_existing_secret: sysdig-access-key
+features:
+  admission_control:
+    enabled: true
+    deny_on_error: false
+    dry_run: false
+    timeout: 5
+    http_port: 8443
+    excluded_namespaces: ["falco", "default", "kube-system"]
+    container_vulnerability_management:
+      enabled: true
+  kubernetes_metadata:
+    enabled: false
+  posture:
+    host_posture:
+      enabled: true
+    cluster_posture:
+      enabled: true
+  vulnerability_management:
+    host_vulnerability_management:
+      enabled: true
+    container_vulnerability_management:
+      enabled: true
+      local_cluster:
+        # Restrict access to specific Docker secrets when Cluster Scanner is running.
+        # The default behavior is listing all secrets.
+        registry_secrets: []
+        # - namespace: namespace1
+        #   secrets:
+        #     - secret1
+        #     - secret2
+        # - namespace: namespace2
+        #   secrets:
+        #     - secret3
+        #     - secret4
+      registry_ssl:
+        verify: true
+    in_use:
+      enabled: true
+  detections:
+    drift_control:
+      enabled: false
+    malware_control:
+      enabled: false
+    ml_policies:
+      enabled: false
+    kubernetes_audit:
+      enabled: true
+      timeout: 5
+  investigations:
+    activity_audit:
+      enabled: true
+    live_logs:
+      enabled: false
+    network_security:
+      enabled: false
+    audit_tap:
+      enabled: false
+    captures:
+      enabled: false
+    event_forwarder:
+      enabled: false
+  responding:
+    rapid_response:
+      enabled: false
+  monitoring:
+    app_checks:
+      enabled: false
+    java_management_extensions:
+      enabled: false
+    prometheus:
+      enabled: true
+    statsd:
+      enabled: false
+cluster:
+  run_mode: single-process
+  podAnnotations:
+    prometheus.io/scrape: "true"
+  # image:
+  #   registry: docker.io
+  #   repository: igoreulalio/cluster-shield
+  #   tag: 1.0.0
+  # additional_settings:
+  #   log_level: debug
+  #   components:
+  #     cluster_scanner_rsi:
+  #       resources:
+  #         memory_limit: 100000000
+  #     cluster_scanner_ise:
+  #       resources:
+  #         memory_limit: 100000000
+  #   cluster_scanner:
+  #       image_sbom_extractor:
+  #           analyzer:
+  #             force_sbom_extraction: true
+  replica_count: 1
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1000Mi
+    requests:
+      cpu: 100m
+      memory: 512Mi
+host:  
+  additional_settings:
+    log_level: debug
+# proxy:
+#   # HTTP proxy to use for all HTTP requests
+#   http_proxy:
+#   # Provide the name of an existing Secret that contains the HTTP proxy
+#   http_proxy_existing_secret:
+#   # HTTPS proxy to use for all HTTPS requests
+#   https_proxy:
+#   # Provide the name of an existing Secret that contains the HTTPS proxy
+#   https_proxy_existing_secret:
+#   # No proxy hosts and ips
+#   no_proxy:
+#   # Provide the name of an existing Secret that contains the no proxy hosts
+#   no_proxy_existing_secret:
